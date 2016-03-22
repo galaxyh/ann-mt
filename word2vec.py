@@ -51,7 +51,7 @@ def load_model(full_bin_name):
 def get_model(params, tokenized_lines, rebuild=False):
     params_str = '_w' + str(params['win_size']) + '_m' + str(params['min_w_num']) + '_v' + str(params['vect_size'])
     model_name = params['corpus_name'] + params_str + '.bin'
-    full_bin_name = os.path.join(params['save_path'], params['new_models_dir'], model_name)
+    full_bin_name = params['new_models_dir'] + model_name
 
     if rebuild or not os.path.isfile(full_bin_name):
         # bin model is not present on the disk, so get it

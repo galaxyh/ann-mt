@@ -110,7 +110,6 @@ if __name__ == '__main__':
                   'vect_size': cfg.W2V_VECTOR_SIZE,
                   'workers_num': cfg.W2V_WORKER_NUM,
                   'corpus_name': cfg.W2V_CORPUS_NAME,
-                  'save_path': '.',
                   'new_models_dir': cfg.W2V_MODEL_DIR}
 
     _logger.info('Building word2vec model...')
