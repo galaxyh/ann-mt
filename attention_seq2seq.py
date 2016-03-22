@@ -115,7 +115,7 @@ if __name__ == '__main__':
 
     _logger.info('Building word2vec model...')
     ts0 = time.time()
-    w2v_model = word2vec.get_model(w2v_params, sentences_all, rebuild=True)
+    w2v_model = word2vec.get_model(w2v_params, sentences_all, rebuild=cfg.W2V_REBUILD_MODEL)
     _logger.info('Done building word2vec model ({:.1f} minutes)'.format((time.time() - ts0) / 60))
 
     _logger.info('Preparing train/test data...')
