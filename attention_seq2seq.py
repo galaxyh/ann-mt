@@ -91,7 +91,7 @@ def save_model(nn_model, nn_params, corpus_name):
     model_name += '_ol' + str(nn_params['output_length'])
     model_name += '_ld' + str(nn_params['output_dim'])
     model_name += '_d' + str(nn_params['depth'])
-    model_path = cfg.NN_MODEL_DIR + model_name
+    model_path = cfg.NN_MODEL_DIR + '/' + model_name
     nn_model.save_weights(model_path, overwrite=True)
 
 
