@@ -28,11 +28,13 @@ def build_nn_model(nn_params):
 
 
 def train(nn_model, batch_iter):
-    ts = time.time()
     _logger.info('Training...')
+    batch_count = 0
     for array_s, array_t in batch_iter:
         nn_model.fit(array_s, array_t, nb_epoch=1, batch_size=len(array_s), show_accuracy=True)
-    _logger.info('Done training ({:.1f} minutes).'.format((time.time() - ts) / 60))
+        batch_count += 1
+        if batch_count % 10 == 0:
+            _logger.info('Processed sentences {}'.format(batch_count * len(array_s)))
 
 
 def test(nn_model, test_batch):
@@ -79,22 +81,28 @@ if __name__ == '__main__':
     _logger.info('Done building word2vec model ({:.1f} minutes)'.format((time.time() - ts0) / 60))
 
     nn_params = {'nb_epoch': cfg.NN_EPOCH_NUM,
-                'input_dim': len(w2v_model.vocab),
-                'input_length': cfg.NN_SENTENCE_MAX_LENGTH_SOURCE,
-                'hidden_dim': cfg.NN_HIDDEN_DIM,
-                'output_length': cfg.NN_SENTENCE_MAX_LENGTH_TARGET,
-                'output_dim': len(w2v_model.vocab),
-                'depth': cfg.NN_DEPTH}
+                 'input_dim': len(w2v_model.vocab),
+                 'input_length': cfg.NN_SENTENCE_MAX_LENGTH_SOURCE,
+                 'hidden_dim': cfg.NN_HIDDEN_DIM,
+                 'output_length': cfg.NN_SENTENCE_MAX_LENGTH_TARGET,
+                 'output_dim': len(w2v_model.vocab),
+                 'depth': cfg.NN_DEPTH}
     nn_model = build_nn_model(nn_params)
 
-    one_hot_iter = cp.get_parallel_one_hot_ndarray_iter(w2v_model.vocab,
-                                                     cfg.NN_BATCH_SIZE,
-                                                     corpus_train_source,
-                                                     corpus_train_target,
-                                                     maxlen_a=maxlen_source,
-                                                     maxlen_b=maxlen_target)
-    train(nn_model, one_hot_iter)
-    save_model(nn_model, nn_params, cfg.NN_CORPUS_NAME)
+    ts0 = time.time()
+    for full_data_pass_num in xrange(1, cfg.NN_EPOCH_NUM + 1):
+        ts1 = time.time()
+        _logger.info('Full-data-pass iteration num: ' + str(full_data_pass_num))
+        one_hot_iter = cp.get_parallel_one_hot_ndarray_iter(w2v_model.vocab,
+                                                            cfg.NN_BATCH_SIZE,
+                                                            corpus_train_source,
+                                                            corpus_train_target,
+                                                            maxlen_a=maxlen_source,
+                                                            maxlen_b=maxlen_target)
+        train(nn_model, one_hot_iter)
+        save_model(nn_model, nn_params, cfg.NN_CORPUS_NAME)
+        _logger.info('Time per full-pass: {:.1f} minutes.'.format((time.time() - ts1) / full_data_pass_num / 60))
+    _logger.info('Done training ({:.1f} minutes)'.format((time.time() - ts0) / 60))
 
     '''_logger.info('Prediction and ground truth:')
     for p, g in zip(nn_model.predict(x_test), y_test):
