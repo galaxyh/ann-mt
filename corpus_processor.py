@@ -81,7 +81,6 @@ def _get_parallel_batch(parallel_sentences, batch_size=1):
         if len(batch) == batch_size:
             yield batch
             batch = []
-    yield []
 
 
 def get_parallel_processed_sentences_batch_iter(parallel_sentence_iter, batch_size=1):
