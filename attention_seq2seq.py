@@ -6,6 +6,7 @@ import corpus_processor as cp
 import config as cfg
 
 from keras.layers.core import Activation
+from keras.models import model_from_json
 from seq2seq.models import AttentionSeq2seq
 from utils import get_logger
 
@@ -54,8 +55,20 @@ def save_model(nn_model, nn_params, corpus_name):
     model_name += '_ol' + str(nn_params['output_length'])
     model_name += '_ld' + str(nn_params['output_dim'])
     model_name += '_d' + str(nn_params['depth'])
-    model_path = cfg.NN_MODEL_DIR + '/' + model_name
-    nn_model.save_weights(model_path, overwrite=True)
+    model_path_architecture = cfg.NN_MODEL_DIR + '/' + model_name + '.json'
+    model_path_weights = cfg.NN_MODEL_DIR + '/' + model_name + '.h5'
+    json_string = nn_model.to_json()
+    open(model_path_architecture, 'w').write(json_string)
+    nn_model.save_weights(model_path_weights, overwrite=True)
+
+
+def load_model(architecture_filename, weights_filename):
+    ts = time.time()
+    _logger.info('Loading ANN model...')
+    nn_model = model_from_json(open(architecture_filename).read())
+    nn_model.load_weights(weights_filename)
+    _logger.info('ANN Model loaded ({:.1f} minutes).'.format((time.time() - ts) / 60))
+    return nn_model
 
 
 if __name__ == '__main__':
@@ -91,7 +104,6 @@ if __name__ == '__main__':
 
     ts0 = time.time()
     for full_data_pass_num in xrange(1, cfg.NN_EPOCH_NUM + 1):
-        ts1 = time.time()
         _logger.info('Full-data-pass iteration num: ' + str(full_data_pass_num))
         one_hot_iter = cp.get_parallel_one_hot_ndarray_iter(w2v_model.vocab,
                                                             cfg.NN_BATCH_SIZE,
@@ -101,7 +113,8 @@ if __name__ == '__main__':
                                                             maxlen_b=maxlen_target)
         train(nn_model, one_hot_iter)
         save_model(nn_model, nn_params, cfg.NN_CORPUS_NAME)
-        _logger.info('Time per full-pass: {:.1f} minutes.'.format((time.time() - ts1) / full_data_pass_num / 60))
+        _logger.info(
+            'Average time per full-pass: {:.1f} minutes.'.format((time.time() - ts0) / full_data_pass_num / 60))
     _logger.info('Done training ({:.1f} minutes)'.format((time.time() - ts0) / 60))
 
     '''_logger.info('Prediction and ground truth:')
