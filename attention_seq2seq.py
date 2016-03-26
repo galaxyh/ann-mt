@@ -143,5 +143,8 @@ if __name__ == '__main__':
         source = raw_input("EN> ")
         if source == '__EOT__':
             break
-        target = nn_model.predict([cp.sentence_to_one_hot(source)])
-        print('CH> ' + cp.one_hot_to_sentence(w2v_model, target))
+        source = source.split()
+        x = cp.sentence_to_one_hot(cfg.NN_SENTENCE_MAX_LENGTH_SOURCE, w2v_model.vocab, source)
+        for target in nn_model.predict([x]):
+            ch = cp.one_hot_to_sentence(w2v_model.index2word, target)
+            print('CH> ' + ''.join(ch))
