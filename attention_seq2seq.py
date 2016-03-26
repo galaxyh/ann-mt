@@ -77,7 +77,8 @@ def save_model_weights(nn_model, nn_params):
 def load_model(architecture_filename, weights_filename):
     ts = time.time()
     _logger.info('Loading ANN model...')
-    nn_model = model_from_json(open(architecture_filename).read())
+    nn_model = model_from_json(open(architecture_filename).read(),
+                               custom_objects={'AttentionSeq2seq': AttentionSeq2seq})
     nn_model.load_weights(weights_filename)
     _logger.info('ANN Model loaded ({:.1f} minutes).'.format((time.time() - ts) / 60))
     return nn_model
