@@ -147,5 +147,5 @@ if __name__ == '__main__':
         x = cp.get_one_hot_ndarray([source], cfg.NN_SENTENCE_MAX_LENGTH_SOURCE, w2v_model.vocab)
         for target in nn_model.predict(x):
             ch = cp.one_hot_to_sentence(w2v_model.index2word, target)
-            print('CH> ' + ch)
+            print('CH> ' + str(ch))
             print('CH> ' + ''.join(ch))
