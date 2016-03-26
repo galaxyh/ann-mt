@@ -2,6 +2,7 @@
 
 import time
 import word2vec
+import six
 import corpus_processor as cp
 import config as cfg
 
@@ -74,12 +75,14 @@ def save_model_weights(nn_model, nn_params):
     nn_model.save_weights(model_path_weights, overwrite=True)
 
 
-def load_model(architecture_filename, weights_filename):
+def load_model(architecture, weights):
     ts = time.time()
     _logger.info('Loading ANN model...')
-    nn_model = model_from_json(open(architecture_filename).read(),
-                               custom_objects={'AttentionSeq2seq': AttentionSeq2seq})
-    nn_model.load_weights(weights_filename)
+    if isinstance(architecture, six.string_types):
+        nn_model = model_from_json(open(architecture).read())
+    else:
+        nn_model = architecture
+    nn_model.load_weights(weights)
     _logger.info('ANN Model loaded ({:.1f} minutes).'.format((time.time() - ts) / 60))
     return nn_model
 
