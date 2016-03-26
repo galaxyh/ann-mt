@@ -24,6 +24,7 @@ def build_nn_model(nn_params):
                              depth=nn_params['depth'])
     model.add(Activation('softmax'))
     model.compile(loss='categorical_crossentropy', optimizer='rmsprop')
+    save_model_architecture(model, nn_params)
     _logger.info('Done building NN model ({:.1f} minutes).'.format((time.time() - ts) / 60))
     return model
 
@@ -46,19 +47,28 @@ def test(nn_model, test_batch):
     _logger.info('Done evaluation ({:.1f} minutes)'.format((time.time() - ts) / 60))
 
 
-def save_model(nn_model, nn_params, corpus_name):
-    model_name = corpus_name
+def gen_nn_model_name(nn_params):
+    model_name = nn_params['corpus_name']
     model_name += '_e' + str(nn_params['nb_epoch'])
     model_name += '_id' + str(nn_params['input_dim'])
     model_name += '_il' + str(nn_params['input_length'])
     model_name += '_hd' + str(nn_params['hidden_dim'])
     model_name += '_ol' + str(nn_params['output_length'])
-    model_name += '_ld' + str(nn_params['output_dim'])
+    model_name += '_od' + str(nn_params['output_dim'])
     model_name += '_d' + str(nn_params['depth'])
+    return model_name
+
+
+def save_model_architecture(nn_model, nn_params):
+    model_name = gen_nn_model_name(nn_params)
     model_path_architecture = cfg.NN_MODEL_DIR + '/' + model_name + '.json'
-    model_path_weights = cfg.NN_MODEL_DIR + '/' + model_name + '.h5'
     json_string = nn_model.to_json()
     open(model_path_architecture, 'w').write(json_string)
+
+
+def save_model_weights(nn_model, nn_params):
+    model_name = gen_nn_model_name(nn_params)
+    model_path_weights = cfg.NN_MODEL_DIR + '/' + model_name + '.h5'
     nn_model.save_weights(model_path_weights, overwrite=True)
 
 
@@ -99,7 +109,8 @@ if __name__ == '__main__':
                  'hidden_dim': cfg.NN_HIDDEN_DIM,
                  'output_length': cfg.NN_SENTENCE_MAX_LENGTH_TARGET,
                  'output_dim': len(w2v_model.vocab),
-                 'depth': cfg.NN_DEPTH}
+                 'depth': cfg.NN_DEPTH,
+                 'corpus_name': cfg.NN_CORPUS_NAME}
     nn_model = build_nn_model(nn_params)
 
     ts0 = time.time()
@@ -112,7 +123,7 @@ if __name__ == '__main__':
                                                             maxlen_a=maxlen_source,
                                                             maxlen_b=maxlen_target)
         train(nn_model, one_hot_iter)
-        save_model(nn_model, nn_params, cfg.NN_CORPUS_NAME)
+        save_model_weights(nn_model, nn_params)
         _logger.info(
             'Average time per full-pass: {:.1f} minutes.'.format((time.time() - ts0) / full_data_pass_num / 60))
     _logger.info('Done training ({:.1f} minutes)'.format((time.time() - ts0) / 60))
