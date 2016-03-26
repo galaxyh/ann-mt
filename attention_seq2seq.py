@@ -5,6 +5,7 @@ import word2vec
 import corpus_processor as cp
 import config as cfg
 
+from keras.models import Sequential
 from keras.layers.core import Activation
 from keras.models import model_from_json
 from seq2seq.models import AttentionSeq2seq
@@ -16,12 +17,13 @@ _logger = get_logger(__name__)
 def build_nn_model(nn_params):
     ts = time.time()
     _logger.info('Building NN model...')
-    model = AttentionSeq2seq(input_dim=nn_params['input_dim'],
-                             input_length=nn_params['input_length'],
-                             hidden_dim=nn_params['hidden_dim'],
-                             output_length=nn_params['output_length'],
-                             output_dim=nn_params['output_dim'],
-                             depth=nn_params['depth'])
+    model = Sequential()
+    model.add(AttentionSeq2seq(input_dim=nn_params['input_dim'],
+                               input_length=nn_params['input_length'],
+                               hidden_dim=nn_params['hidden_dim'],
+                               output_length=nn_params['output_length'],
+                               output_dim=nn_params['output_dim'],
+                               depth=nn_params['depth']))
     model.add(Activation('softmax'))
     model.compile(loss='categorical_crossentropy', optimizer='rmsprop')
     save_model_architecture(model, nn_params)
