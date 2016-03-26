@@ -135,6 +135,13 @@ if __name__ == '__main__':
     _logger.info('Done training ({:.1f} minutes)'.format((time.time() - ts0) / 60))
 
     '''_logger.info('Prediction and ground truth:')
-    for p, g in zip(nn_model.predict(x_test), y_test):
-        _logger.info('[P] {}'.format(one_hot_to_sentence(w2v_model, p)))
-        _logger.info('[G] {}'.format(one_hot_to_sentence(w2v_model, g)))'''
+        for p, g in zip(nn_model.predict(x_test), y_test):
+            _logger.info('[P] {}'.format(one_hot_to_sentence(w2v_model, p)))
+            _logger.info('[G] {}'.format(one_hot_to_sentence(w2v_model, g)))'''
+
+    while True:
+        source = raw_input("EN> ")
+        if source == '__EOT__':
+            break
+        target = nn_model.predict([cp.sentence_to_one_hot(source)])
+        print('CH> ' + cp.one_hot_to_sentence(w2v_model, target))
