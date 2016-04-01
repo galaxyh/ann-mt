@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 
 import time
-import word2vec
-import six
-import corpus_processor as cp
-import config as cfg
 
-from keras.models import Sequential
+import six
 from keras.layers.core import Activation
+from keras.models import Sequential
 from keras.models import model_from_json
 from seq2seq.models import AttentionSeq2seq
+
+import config as cfg
+import corpus_processor as cp
+import word2vec
 from utils import get_logger
 
 _logger = get_logger(__name__)
