@@ -51,7 +51,7 @@ tf.app.flags.DEFINE_integer("size", 1024, "Size of each model layer.")
 tf.app.flags.DEFINE_integer("num_layers", 3, "Number of layers in the model.")
 tf.app.flags.DEFINE_integer("source_vocab_size", 40000, "Source language vocabulary size.")
 tf.app.flags.DEFINE_integer("target_vocab_size", 40000, "Target language vocabulary size.")
-tf.app.flags.DEFINE_string("data_dir", "/tmp", "Data directory")
+tf.app.flags.DEFINE_string("data_dir", "/tmp", "Data directory.")
 tf.app.flags.DEFINE_string("train_dir", "/tmp", "Training directory.")
 tf.app.flags.DEFINE_integer("max_train_data_size", 0,
                             "Limit on the size of training data (0: no limit).")
@@ -61,6 +61,10 @@ tf.app.flags.DEFINE_boolean("decode", False,
                             "Set to True for interactive decoding.")
 tf.app.flags.DEFINE_boolean("self_test", False,
                             "Run a self-test if this is set to True.")
+tf.app.flags.DEFINE_string("train_name", "ready_train", "Training corpus name.")
+tf.app.flags.DEFINE_string("dev_name", "ready_dev", "Development corpus name.")
+tf.app.flags.DEFINE_string("source_ext", "en", "Source language file extension.")
+tf.app.flags.DEFINE_string("target_ext", "ch", "Target language file extension.")
 
 FLAGS = tf.app.flags.FLAGS
 
@@ -128,8 +132,9 @@ def train():
     """Train a en->fr translation model using WMT data."""
     # Prepare parallel corpus data.
     print("Preparing parallel corpus data in %s" % FLAGS.data_dir)
-    en_train, fr_train, en_dev, fr_dev, _, _ = data_utils.prepare_data(
+    source_train, target_train, source_dev, target_dev, _, _ = data_utils.prepare_data(
         FLAGS.data_dir, FLAGS.source_vocab_size, FLAGS.target_vocab_size,
+        FLAGS.train_name, FLAGS.dev_name, FLAGS.source_ext, FLAGS.target_ext,
         tokenizer=data_utils.whitespace_tokenizer)
 
     with tf.Session() as sess:
@@ -140,8 +145,8 @@ def train():
         # Read data into buckets and compute their sizes.
         print("Reading development and training data (limit: %d)."
               % FLAGS.max_train_data_size)
-        dev_set = read_data(en_dev, fr_dev)
-        train_set = read_data(en_train, fr_train, FLAGS.max_train_data_size)
+        dev_set = read_data(source_dev, target_dev)
+        train_set = read_data(source_train, target_train, FLAGS.max_train_data_size)
         train_bucket_sizes = [len(train_set[b]) for b in xrange(len(_buckets))]
         train_total_size = float(sum(train_bucket_sizes))
 
@@ -209,9 +214,9 @@ def decode():
 
         # Load vocabularies.
         source_vocab_path = os.path.join(FLAGS.data_dir,
-                                         "vocab%d.source" % FLAGS.source_vocab_size)
+                                         ("vocab%d." + FLAGS.source_ext) % FLAGS.source_vocab_size)
         target_vocab_path = os.path.join(FLAGS.data_dir,
-                                         "vocab%d.target" % FLAGS.target_vocab_size)
+                                         ("vocab%d." + FLAGS.target_ext) % FLAGS.target_vocab_size)
         source_vocab, _ = data_utils.initialize_vocabulary(source_vocab_path)
         _, rev_target_vocab = data_utils.initialize_vocabulary(target_vocab_path)
 

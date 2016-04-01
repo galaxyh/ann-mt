@@ -186,7 +186,9 @@ def data_to_token_ids(data_path, target_path, vocabulary_path,
                     tokens_file.write(" ".join([str(tok) for tok in token_ids]) + "\n")
 
 
-def prepare_data(data_dir, source_vocabulary_size, target_vocabulary_size, tokenizer=None):
+def prepare_data(data_dir, source_vocabulary_size, target_vocabulary_size,
+                 train_name, dev_name, source_ext, target_ext,
+                 tokenizer=None):
     """Get WMT data into data_dir, create vocabularies and tokenize data.
 
     Args:
@@ -205,13 +207,9 @@ def prepare_data(data_dir, source_vocabulary_size, target_vocabulary_size, token
         (5) path to the source language vocabulary file,
         (6) path to the target language vocabulary file.
     """
-    train_name = 'ready'
-    dev_name = 'ready'
+
     train_path = os.path.join(data_dir, train_name)
     dev_path = os.path.join(data_dir, dev_name)
-
-    source_ext = 'en'
-    target_ext = 'ch'
 
     # Create vocabularies of the appropriate sizes.
     target_vocab_path = os.path.join(data_dir, ('vocab%d.' + target_ext) % target_vocabulary_size)
