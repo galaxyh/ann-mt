@@ -23,7 +23,7 @@ See the following papers for more information on neural translation models.
  * http://arxiv.org/abs/1409.0473
  * http://arxiv.org/abs/1412.2007
 """
-from __future__ import absolute_import
+# from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
@@ -37,8 +37,8 @@ import numpy as np
 from six.moves import xrange  # pylint: disable=redefined-builtin
 import tensorflow as tf
 
-from . import data_utils
-from . import seq2seq_model
+import data_utils
+import seq2seq_model
 
 tf.app.flags.DEFINE_float("learning_rate", 0.5, "Learning rate.")
 tf.app.flags.DEFINE_float("learning_rate_decay_factor", 0.99,
