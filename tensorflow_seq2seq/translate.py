@@ -66,6 +66,7 @@ tf.app.flags.DEFINE_string("train_name", "ready_train", "Training corpus name.")
 tf.app.flags.DEFINE_string("dev_name", "ready_dev", "Development corpus name.")
 tf.app.flags.DEFINE_string("source_ext", "en", "Source language file extension.")
 tf.app.flags.DEFINE_string("target_ext", "ch", "Target language file extension.")
+tf.app.flags.DEFINE_string("translation_file", "", "Save translation result file name")
 
 FLAGS = tf.app.flags.FLAGS
 
@@ -245,9 +246,10 @@ def decode():
             # Print out target language sentence corresponding to outputs.
             out_sentence = " ".join([tf.compat.as_str(rev_target_vocab[output]) for output in outputs])
             print(out_sentence)
-            with gfile.GFile("translate.txt", mode="wab") as fw:
-                fw.write("SOURCE> " + sentence + b"\n")
-                fw.write("TARGET> " + out_sentence + b"\n\n")
+            if FLAGS.translation_file != "":
+                with gfile.GFile(FLAGS.translation_file, mode="wab") as fw:
+                    fw.write(FLAGS.source_ext + "> " + sentence + b"\n")
+                    fw.write(FLAGS.target_ext + "> " + out_sentence + b"\n\n")
             print("> ", end="")
             sys.stdout.flush()
             sentence = sys.stdin.readline()
