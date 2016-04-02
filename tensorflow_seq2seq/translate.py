@@ -248,8 +248,9 @@ def decode():
             print(out_sentence)
             if FLAGS.translation_file != "":
                 with gfile.GFile(FLAGS.translation_file, mode="wab") as fw:
-                    fw.write(FLAGS.source_ext + "> " + sentence + b"\n")
+                    fw.write(FLAGS.source_ext + "> " + sentence)
                     fw.write(FLAGS.target_ext + "> " + out_sentence + b"\n\n")
+                    fw.flush()
             print("> ", end="")
             sys.stdout.flush()
             sentence = sys.stdin.readline()
