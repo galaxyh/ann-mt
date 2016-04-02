@@ -247,7 +247,7 @@ def decode():
             out_sentence = " ".join([tf.compat.as_str(rev_target_vocab[output]) for output in outputs])
             print(out_sentence)
             if FLAGS.translation_file != "":
-                with gfile.GFile(FLAGS.translation_file, mode="wab") as fw:
+                with gfile.GFile(FLAGS.translation_file, mode="ab") as fw:
                     fw.write(FLAGS.source_ext + "> " + sentence)
                     fw.write(FLAGS.target_ext + "> " + out_sentence + b"\n\n")
                     fw.flush()
