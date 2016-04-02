@@ -111,7 +111,7 @@ class Seq2SeqModel(object):
                 encoder_inputs, decoder_inputs, cell,
                 num_encoder_symbols=source_vocab_size,
                 num_decoder_symbols=target_vocab_size,
-                # embedding_size=size,
+                # embedding_size=size, # Commented out. TensorFlow 0.7.1 compatibility
                 output_projection=output_projection,
                 feed_previous=do_decode)
 
