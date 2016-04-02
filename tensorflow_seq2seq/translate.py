@@ -159,6 +159,7 @@ def train():
                                for i in xrange(len(train_bucket_sizes))]
 
         # This is the training loop.
+        print("Start training...")
         step_time, loss = 0.0, 0.0
         current_step = 0
         previous_losses = []
