@@ -32,6 +32,7 @@ import os
 import random
 import sys
 import time
+import codecs
 
 import numpy as np
 from six.moves import xrange  # pylint: disable=redefined-builtin
@@ -242,7 +243,11 @@ def decode():
             if data_utils.EOS_ID in outputs:
                 outputs = outputs[:outputs.index(data_utils.EOS_ID)]
             # Print out target language sentence corresponding to outputs.
-            print(" ".join([tf.compat.as_str(rev_target_vocab[output]) for output in outputs]))
+            out_sentence = " ".join([tf.compat.as_str(rev_target_vocab[output]) for output in outputs])
+            print(out_sentence)
+            with codecs.open("translate.txt", "a", "utf-8") as fw:
+                fw.write(out_sentence)
+                fw.close()
             print("> ", end="")
             sys.stdout.flush()
             sentence = sys.stdin.readline()
