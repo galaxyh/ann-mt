@@ -32,11 +32,11 @@ import os
 import random
 import sys
 import time
-import codecs
 
 import numpy as np
 from six.moves import xrange  # pylint: disable=redefined-builtin
 import tensorflow as tf
+from tensorflow.python.platform import gfile
 
 import data_utils
 import seq2seq_model
@@ -245,9 +245,9 @@ def decode():
             # Print out target language sentence corresponding to outputs.
             out_sentence = " ".join([tf.compat.as_str(rev_target_vocab[output]) for output in outputs])
             print(out_sentence)
-            with codecs.open("translate.txt", "a", "utf-8") as fw:
-                fw.write(out_sentence)
-                fw.close()
+            with gfile.GFile("translate.txt", mode="wab") as fw:
+                fw.write("SOURCE> " + sentence + b"\n")
+                fw.write("TARGET> " + out_sentence + b"\n\n")
             print("> ", end="")
             sys.stdout.flush()
             sentence = sys.stdin.readline()
